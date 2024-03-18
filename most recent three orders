@@ -1,0 +1,46 @@
+Table: Customers
+
++---------------+---------+
+| Column Name   | Type    |
++---------------+---------+
+| customer_id   | int     |
+| name          | varchar |
++---------------+---------+
+customer_id is the column with unique values for this table.
+This table contains information about customers.
+ 
+
+Table: Orders
+
++---------------+---------+
+| Column Name   | Type    |
++---------------+---------+
+| order_id      | int     |
+| order_date    | date    |
+| customer_id   | int     |
+| cost          | int     |
++---------------+---------+
+order_id is the column with unique values for this table.
+This table contains information about the orders made by customer_id.
+Each customer has one order per day.
+ 
+
+Write a solution to find the most recent three orders of each user. If a user ordered less than three orders, return all of their orders.
+
+Return the result table ordered by customer_name in ascending order and in case of a tie by the customer_id in ascending order. If there is still a tie, order them by order_date in descending order.
+
+The result format is in the following example.
+
+
+--SQL Solution
+# Write your MySQL query statement below
+WITH ranking AS (
+SELECT Customers.name as customer_name, Orders.customer_id,order_id,order_date,
+ROW_NUMBER() OVER(PARTITION BY customer_id ORDER BY order_date DESC) AS rn
+FROM Orders
+JOIN Customers ON Orders.customer_id = Customers.customer_id
+)
+SELECT customer_name,customer_id,order_id,order_date 
+FROM ranking
+WHERE rn<=3
+ORDER BY customer_name,customer_id,order_date DESC
